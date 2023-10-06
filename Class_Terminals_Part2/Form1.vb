@@ -1,19 +1,17 @@
 ﻿
 'Jessica McArthur
-'RCET 3371
-'WK 4-1 
-'4 October 2023
+'Class example....terminals 
 
 
 Imports System.Text.RegularExpressions
 
     Public Class Form1
-        Dim portState As Boolean
-        Dim receiveByte(18) As Byte        'Receive Data Bytes
+    Dim portState As Boolean
+    Dim receiveByte(18) As Byte        'Receive Data Bytes
 
-    Dim readSize As Byte
-    Dim receiveCount As Integer
-    Dim newData As Integer
+    Public dataOut As String
+    Dim Val, receiveCount, TransmitCount As Double
+    Dim newData, readSize As Integer
     Dim dataIn1, dataIn2, dataIn3, dataIn4, dataIn5, dataIn6, dataIn7, dataIn8 As Integer
 
     'Closes Serial Ports when forms closes
@@ -78,8 +76,59 @@ Imports System.Text.RegularExpressions
             PortDataListBox.Items.Add("Baud Rate = " & SerialPort1.BaudRate) 'Show current baud rate
             PortDataListBox.Items.Add("Data bits = " & SerialPort1.DataBits)
             PortDataListBox.Items.Add("Stop bits = " & SerialPort1.StopBits)
-            PortDataListBox.Items.Add("Parity = " & SerialPort1.Parity)
-        End Sub
+        PortDataListBox.Items.Add("Parity = " & SerialPort1.Parity)
+
+
+        'added 10.5 
+        'updates output listbox
+        Dim inPut1, inPut2, inPut3, inPut4, inPut5, inPut6, inPut7, inPut8 As Integer
+
+        If newData > 0 Then                             'Test newData if >0 there is information to display
+            Select Case newData
+                Case = 8
+                    inPut8 = dataIn8
+                    newData -= 1
+            End Select
+            Select Case newData
+                Case = 7
+                    inPut7 = dataIn7
+                    newData -= 1
+            End Select
+            Select Case newData
+                Case = 6
+                    inPut6 = dataIn6
+                    newData -= 1
+            End Select
+            Select Case newData
+                Case = 5
+                    inPut5 = dataIn5
+                    newData -= 1
+            End Select
+            Select Case newData
+                Case = 4
+                    inPut4 = dataIn4
+                    newData -= 1
+            End Select
+            Select Case newData
+                Case = 3
+                    inPut3 = dataIn3
+                    newData -= 1
+            End Select
+            Select Case newData
+                Case = 2
+                    inPut2 = dataIn2
+                    newData -= 1
+            End Select
+            Select Case newData
+                Case = 1
+                    inPut1 = dataIn1
+                    newData -= 1
+            End Select
+            'Update input listbox with new data
+            InTermListBox.Items.Add(Chr(inPut1) & Chr(inPut2) & Chr(inPut3) & Chr(inPut4) & Chr(inPut5) & Chr(inPut6) & Chr(inPut7) & Chr(inPut8))
+        End If
+
+    End Sub
 
         Private Sub ListBox2_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComPortListBox.SelectedIndexChanged
             Try
@@ -119,11 +168,13 @@ Imports System.Text.RegularExpressions
         BaudRateListBox.Items.Add(921600)
     End Sub
 
+
+    'Up dated routine to send all characters in list box
     Private Sub SendButton_Click(sender As Object, e As EventArgs) Handles SendButton.Click
             Timer1.Enabled = False                                  'Stop Timer
-            Dim dataOut As String                                   'Transmit Variables
-            'Dim dataIn1, dataIn2, dataIn3, dataIn4 As Integer
-            Dim input As String
+        'Dim dataOut As String                                   'Transmit Variables
+        'Dim dataIn1, dataIn2, dataIn3, dataIn4 As Integer
+        Dim input As String
 
             input = TextBox1.Text                                   'Load transmit variable with information from text box
             dataOut = Regex.Replace(input, "\s", "")                'Removes all spaces from input
@@ -165,12 +216,16 @@ Imports System.Text.RegularExpressions
     'Added 10.5 
     'Recieving data
     'Crashes program----??????
-    'Private Sub DataReceived(sender As Object, e As EventArgs) Handles SerialPort1.DataReceived
-    '    readSize = SerialPort1.BytesToRead
-    '    receiveCount += 1
-    '    SerialPort1.Read(receiveByte, 0, 4)
+    '?????????????????????????????????????????
 
-    '    Select Case newData
+
+    'Asynchronous Serial receive subroutine triggered by serial receive event
+    'Private Sub DataReceived(sender As Object, e As EventArgs) Handles SerialPort1.DataReceived
+    '    'readSize = SerialPort1.BytesToRead
+    '    receiveCount += 1                                           'increment recieve byte counter
+    '    SerialPort1.Read(receiveByte, 0, 4)                         'read serial buffer value
+
+    '    Select Case newData                                         'test case to determine where to place info
     '        Case = 0
     '            dataIn1 = receiveByte(0)
     '        Case = 1
@@ -190,11 +245,11 @@ Imports System.Text.RegularExpressions
     '        Case = 8
     '            dataIn8 = receiveByte(0)
     '        Case Else
-    '            newData = 0
+    '            newData = 0                                             'possible over flow, reset newData
     '            Exit Sub
 
     '    End Select
-    '    newData += 1
+    '    newData += 1                                                    'Increment newData once loop is complete
     'End Sub
 
 
